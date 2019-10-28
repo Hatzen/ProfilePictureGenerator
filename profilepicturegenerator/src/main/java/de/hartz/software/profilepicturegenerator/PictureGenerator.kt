@@ -17,13 +17,13 @@ object PictureGenerator {
         val instance = PictureInstance()
         instance.width = 14
         instance.height = 14
-        instance.colors = arrayOf(Color.GREEN, Color.LTGRAY)
+        instance.colors = intArrayOf(Color.GREEN, Color.LTGRAY)
         instance.singleShape = SingleShape.Rectangle
         instance.symmetric = Symmetric.NONE
         return instance.generate()
     }
 
-    fun generate(width: Int, height:Int, colors: Array<Int>, maxColors: Int, shape: SingleShape, symmetric: Symmetric) : Bitmap {
+    fun generate(width: Int, height:Int, colors: IntArray, maxColors: Int, shape: SingleShape, symmetric: Symmetric) : PictureInstance {
         val instance = PictureInstance()
         instance.width = width
         instance.height = height
@@ -31,7 +31,7 @@ object PictureGenerator {
         instance.maxColors = maxColors
         instance.singleShape = shape
         instance.symmetric = symmetric
-        return instance.generate()
+        return instance
     }
 
 

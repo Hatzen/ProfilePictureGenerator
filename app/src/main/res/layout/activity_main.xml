@@ -23,8 +23,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
         <Button
-            android:text="Change Form"
-            android:id="@+id/form"
+            android:text="Change Shape"
+            android:id="@+id/shape"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
         <Button
