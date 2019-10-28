@@ -1,6 +1,7 @@
 package de.hartz.software.profilepicturegenerator
 
 import android.graphics.*
+import java.lang.Exception
 import java.lang.RuntimeException
 import java.util.*
 import kotlin.collections.ArrayList
@@ -38,9 +39,9 @@ class PictureInstance {
     private fun computeTemplateMatrix() {
         templateMatrix = arrayListOf()
 
-        for (y in 0..height) {
+        for (y in 0 until height) {
             templateMatrix!!.add(arrayListOf())
-            for (x in 0..width) {
+            for (x in 0 until width) {
                 val hasValue = getRandomBoolean(0.40f)
                 templateMatrix!![y].add(PictureUnit(hasValue, Color.BLACK))
             }
@@ -60,9 +61,9 @@ class PictureInstance {
             reducedColors.remove(choosenColors[i])
         }
 
-        for (y in 0..height) {
+        for (y in 0 until height) {
             templateMatrix!!.add(arrayListOf())
-            for (x in 0..width) {
+            for (x in 0 until width) {
                 val color = choosenColors[random.nextInt(choosenColors.size)]
                 templateMatrix!![y][x].color = color
             }
@@ -81,14 +82,18 @@ class PictureInstance {
         paint.color = colors[0]
         paint.style = Paint.Style.FILL
 
-        for (y in 0..height) {
-            for (x in 0..width) {
-                val pictureUnit = getPictureUnitForPoint(x, y)
-                if (!pictureUnit.hasValue) {
-                    continue
+        for (y in 0 until height) {
+            for (x in 0 until width) {
+                try {
+                    val pictureUnit = getPictureUnitForPoint(x, y)
+                    if (!pictureUnit.hasValue) {
+                        continue
+                    }
+                    paint.color = pictureUnit.color
+                    drawPictureUnit(canvas, paint, x, y)
+                } catch (e: Exception) {
+
                 }
-                paint.color = pictureUnit.color
-                drawPictureUnit(canvas, paint, x, y)
             }
         }
 
@@ -99,13 +104,21 @@ class PictureInstance {
     private fun getPictureUnitForPoint(x: Int, y: Int) : PictureUnit {
         var calculatedX = x
         var calculatedY = y
-        val midX =  (width / 2) + 1
-        if (symmetric == Symmetric.X && x >= midX) {
-           calculatedX = midX - (x - midX)
+
+        var midX =  (width / 2)
+        if (width % 2 == 0) {
+            midX =  (width / 2)
         }
-        val midY =  (height / 2) + 1
-        if (symmetric == Symmetric.Y && y >= midY) {
-           calculatedY = midY - (y - midY)
+        if ((symmetric == Symmetric.X || symmetric == Symmetric.REFLECTION) && x >= midX) {
+           calculatedX = width - (x + midX)
+        }
+
+        var midY =  (height / 2)
+        if (height % 2 == 0) {
+            midY =  (height / 2)
+        }
+        if ((symmetric == Symmetric.Y || symmetric == Symmetric.REFLECTION) && y >= midY) {
+           calculatedY = height - (y + midY)
         }
         var test = templateMatrix!![calculatedY][calculatedX]
 
@@ -120,19 +133,18 @@ class PictureInstance {
 
     
     private fun drawPictureUnit(canvas: Canvas, paint: Paint, x: Int, y: Int) {
-
         when (singleShape) {
             SingleShape.Rectangle -> canvas.drawRect(pictureUnitWidth * x, pictureUnitHeight * y, pictureUnitWidth * x + pictureUnitWidth, pictureUnitHeight * y + pictureUnitHeight, paint);
             SingleShape.Triangle -> {
                 val wallpath = Path()
-                if (x % 2 == 0) {
+                if (x % 2 == 0 || true) {
                     wallpath.lineTo(pictureUnitWidth * x, pictureUnitHeight * y)
-                    wallpath.lineTo(pictureUnitWidth / 2 + pictureUnitWidth * x, pictureUnitHeight + pictureUnitHeight * y)
-                    wallpath.lineTo(pictureUnitWidth / 2 - pictureUnitWidth * x, pictureUnitHeight - pictureUnitHeight * y)
+                    wallpath.lineTo(pictureUnitWidth * x + pictureUnitWidth / 2,  pictureUnitHeight * y + pictureUnitHeight)
+                    wallpath.lineTo(pictureUnitWidth * x - pictureUnitWidth / 2,  pictureUnitHeight * y - pictureUnitHeight)
                 } else {
-                    wallpath.lineTo(pictureUnitWidth * x, pictureUnitHeight + pictureUnitHeight * y)
-                    wallpath.lineTo(pictureUnitWidth / 2 + pictureUnitWidth * x, pictureUnitHeight + pictureUnitHeight * y)
-                    wallpath.lineTo(pictureUnitWidth / 2 - pictureUnitWidth * x, pictureUnitHeight - pictureUnitHeight * y)
+                    wallpath.lineTo(pictureUnitWidth * x,  pictureUnitHeight * y + pictureUnitHeight)
+                    wallpath.lineTo( pictureUnitWidth * x + pictureUnitWidth / 2, pictureUnitHeight * y + pictureUnitHeight)
+                    wallpath.lineTo(pictureUnitWidth * x - pictureUnitWidth / 2, pictureUnitHeight * y - pictureUnitHeight)
                 }
 
                 canvas.drawPath(wallpath, paint)

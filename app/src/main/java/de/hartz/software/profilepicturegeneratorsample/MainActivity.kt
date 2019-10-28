@@ -13,8 +13,8 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
-    var width = 2
-    var height = 2
+    var width = 3
+    var height = 3
     var colors = intArrayOf(Color.CYAN, Color.RED)
     var shape = SingleShape.Rectangle
     var symmetric = Symmetric.NONE
