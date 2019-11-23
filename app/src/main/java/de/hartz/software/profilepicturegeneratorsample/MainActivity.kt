@@ -10,12 +10,13 @@ import de.hartz.software.profilepicturegenerator.PictureInstance
 import de.hartz.software.profilepicturegenerator.SingleShape
 import de.hartz.software.profilepicturegenerator.Symmetric
 import java.util.*
+import javax.crypto.Cipher
 
 class MainActivity : AppCompatActivity() {
 
-    var width = 3
-    var height = 3
-    var colors = intArrayOf(Color.CYAN, Color.RED)
+    var width = 5
+    var height = 5
+    var colors = intArrayOf(R.color.colorPrimaryDark, R.color.colorAccent)
     var shape = SingleShape.Rectangle
     var symmetric = Symmetric.NONE
 
@@ -55,7 +56,7 @@ class MainActivity : AppCompatActivity() {
             createNew()
         }
 
-        instance = PictureGenerator.generate(width, height, colors, 1, shape, symmetric)
+        instance = PictureGenerator.generate(width, height, colors, 2, shape, symmetric)
         instance.createNew()
 
 
@@ -72,6 +73,7 @@ class MainActivity : AppCompatActivity() {
         instance.colors = colors
         instance.singleShape = shape
         instance.symmetric = symmetric
+        instance.seed = Random().nextDouble().toString()
         findViewById<ImageView>(R.id.generatedImageView).setImageBitmap(instance.generate())
     }
 

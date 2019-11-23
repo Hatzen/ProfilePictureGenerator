@@ -1,21 +1,25 @@
 package de.hartz.software.profilepicturegenerator
 
 import android.graphics.*
+import android.util.Log
 import java.lang.Exception
 import java.lang.RuntimeException
 import java.util.*
+import java.util.Objects.hash
+import java.util.stream.Collectors
 import kotlin.collections.ArrayList
 
 
 // https://stackoverflow.com/questions/5663671/creating-an-empty-bitmap-and-drawing-though-canvas-in-android
 class PictureInstance {
 
-    var width = 2
-    var height = 2
+    var width = 12
+    var height = 12
     var colors = intArrayOf(Color.CYAN, Color.RED)
     var maxColors = 2
     var singleShape = SingleShape.Rectangle
     var symmetric = Symmetric.NONE
+    var seed = toString().toList().shuffled().toString()
 
     private val WIDTH = 512
     private val HEIGHT = 512
@@ -42,7 +46,7 @@ class PictureInstance {
         for (y in 0 until height) {
             templateMatrix!!.add(arrayListOf())
             for (x in 0 until width) {
-                val hasValue = getRandomBoolean(0.40f)
+                val hasValue = seed[x % seed.length].toChar() >= 'c'
                 templateMatrix!![y].add(PictureUnit(hasValue, Color.BLACK))
             }
         }
@@ -64,7 +68,7 @@ class PictureInstance {
         for (y in 0 until height) {
             templateMatrix!!.add(arrayListOf())
             for (x in 0 until width) {
-                val color = choosenColors[random.nextInt(choosenColors.size)]
+                val color = choosenColors[(seed[y].toInt().rem(choosenColors.size))]
                 templateMatrix!![y][x].color = color
             }
         }
@@ -92,7 +96,8 @@ class PictureInstance {
                     paint.color = pictureUnit.color
                     drawPictureUnit(canvas, paint, x, y)
                 } catch (e: Exception) {
-
+                    e.printStackTrace()
+                    Log.e("", e.localizedMessage)
                 }
             }
         }
@@ -120,15 +125,18 @@ class PictureInstance {
         if ((symmetric == Symmetric.Y || symmetric == Symmetric.REFLECTION) && y >= midY) {
            calculatedY = height - (y + midY)
         }
-        var test = templateMatrix!![calculatedY][calculatedX]
+        var calculatedPictureUnit = templateMatrix!![calculatedY][calculatedX]
 
-        if (symmetric == Symmetric.Y && y >= midY) {
-            test = PictureUnit(test.hasValue, Color.BLACK)
+        val debug = true
+        if (debug) {
+            if (symmetric == Symmetric.Y && y >= midY) {
+                calculatedPictureUnit = PictureUnit(calculatedPictureUnit.hasValue, Color.BLACK)
+            }
+            if (symmetric == Symmetric.X && x >= midX) {
+                calculatedPictureUnit = PictureUnit(calculatedPictureUnit.hasValue, Color.MAGENTA)
+            }
         }
-        if (symmetric == Symmetric.X && x >= midX) {
-            test = PictureUnit(test.hasValue, Color.MAGENTA)
-        }
-        return test
+        return calculatedPictureUnit
     }
 
     
@@ -141,6 +149,17 @@ class PictureInstance {
                     wallpath.lineTo(pictureUnitWidth * x, pictureUnitHeight * y)
                     wallpath.lineTo(pictureUnitWidth * x + pictureUnitWidth / 2,  pictureUnitHeight * y + pictureUnitHeight)
                     wallpath.lineTo(pictureUnitWidth * x - pictureUnitWidth / 2,  pictureUnitHeight * y - pictureUnitHeight)
+
+                    /*
+                    wallpath.lineTo(0.0F, 0.0F)
+                    wallpath.lineTo(pictureUnitWidth / 2,  pictureUnitHeight)
+                    wallpath.lineTo(pictureUnitWidth / 2,  pictureUnitHeight)
+
+
+                    wallpath.lineTo(pictureUnitWidth * x, pictureUnitHeight * y)
+                    wallpath.lineTo(pictureUnitWidth * x + pictureUnitWidth / 2,  pictureUnitHeight * y + pictureUnitHeight)
+                    wallpath.lineTo(pictureUnitWidth * x - pictureUnitWidth / 2,  pictureUnitHeight * y - pictureUnitHeight)
+                    */
                 } else {
                     wallpath.lineTo(pictureUnitWidth * x,  pictureUnitHeight * y + pictureUnitHeight)
                     wallpath.lineTo( pictureUnitWidth * x + pictureUnitWidth / 2, pictureUnitHeight * y + pictureUnitHeight)
