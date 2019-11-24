@@ -46,7 +46,7 @@ class PictureInstance {
         for (y in 0 until height) {
             templateMatrix!!.add(arrayListOf())
             for (x in 0 until width) {
-                val hasValue = seed[x % seed.length].toChar() >= 'c'
+                val hasValue = seed[x % seed.length].toChar() in 'A'..'c'
                 templateMatrix!![y].add(PictureUnit(hasValue, Color.BLACK))
             }
         }
