@@ -68,7 +68,7 @@ class PictureInstance {
         for (y in 0 until height) {
             templateMatrix!!.add(arrayListOf())
             for (x in 0 until width) {
-                val color = choosenColors[(seed[y].toInt().rem(choosenColors.size))]
+                val color = choosenColors[(seed[y % seed.length - 1].toInt().rem(choosenColors.size - 1))]
                 templateMatrix!![y][x].color = color
             }
         }
