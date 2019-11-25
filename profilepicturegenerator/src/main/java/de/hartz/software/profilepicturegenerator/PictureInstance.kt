@@ -8,6 +8,9 @@ import java.util.*
 import java.util.Objects.hash
 import java.util.stream.Collectors
 import kotlin.collections.ArrayList
+import kotlin.math.abs
+import kotlin.math.cos
+import kotlin.math.sin
 
 
 // https://stackoverflow.com/questions/5663671/creating-an-empty-bitmap-and-drawing-though-canvas-in-android
@@ -42,15 +45,20 @@ class PictureInstance {
 
     private fun computeTemplateMatrix() {
         templateMatrix = arrayListOf()
+        var test = 0
 
         for (y in 0 until height) {
             templateMatrix!!.add(arrayListOf())
             for (x in 0 until width) {
-                val hasValue = seed[x % seed.length].toChar() in 'A'..'c'
+                val hasValue = (seed[abs(x * y + 1541 * cos(x * x.toDouble()).toInt() % seed.length)].toByte() * 2 % 251).toChar() in 'A'..'z'
+                if (hasValue) {
+                    test++
+                }
                 templateMatrix!![y].add(PictureUnit(hasValue, Color.BLACK))
             }
         }
         updateColor()
+        Log.e("Test123", " " + test)
     }
 
     fun updateColor() {
@@ -68,7 +76,8 @@ class PictureInstance {
         for (y in 0 until height) {
             templateMatrix!!.add(arrayListOf())
             for (x in 0 until width) {
-                val color = choosenColors[(seed[y % seed.length].toInt().rem(choosenColors.size))]
+                val seedKey = abs((y * y * y + 3 * sin(x + y.toDouble()))).toInt()
+                val color = choosenColors[(seed[seedKey % seed.length].toInt() % choosenColors.size)]
                 templateMatrix!![y][x].color = color
             }
         }
