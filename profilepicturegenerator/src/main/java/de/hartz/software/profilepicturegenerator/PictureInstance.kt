@@ -50,7 +50,8 @@ class PictureInstance {
         for (y in 0 until height) {
             templateMatrix!!.add(arrayListOf())
             for (x in 0 until width) {
-                val hasValue = (seed[abs(x * y + 1541 * cos(x * x.toDouble()).toInt() % seed.length)].toByte() * 2 % 251).toChar() in 'A'..'z'
+                val seedKey = abs(x * y + 1541 * cos(x * x.toDouble()).toInt()) % seed.length
+                val hasValue = (seed[seedKey].toByte() * 7 % 251).toChar() in 'A'..'z'
                 if (hasValue) {
                     test++
                 }
