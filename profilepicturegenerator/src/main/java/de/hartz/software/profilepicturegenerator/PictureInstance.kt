@@ -74,12 +74,15 @@ class PictureInstance {
     fun computeTemplateMatrix() {
         templateMatrix = arrayListOf()
         val safeSeed = if (seed.isEmpty()) "ProfilePictureGenerator" else seed
+        val seedHash = safeSeed.hashCode()
 
         for (y in 0 until height) {
             val row = arrayListOf<PictureUnit>()
             for (x in 0 until width) {
                 val seedKey = abs(x * y + 1541 * cos(x * x.toDouble()).toInt()) % safeSeed.length
-                val hasValue = (safeSeed[seedKey].toByte() * 7 % 251).toChar() in 'A'..'z'
+                val charVal = safeSeed[seedKey].toInt()
+                val cellVal = abs((charVal * 37) xor (seedHash + x * 19 + y * 31 + x * y * 7))
+                val hasValue = (cellVal % 100) < 52
                 row.add(PictureUnit(hasValue, Color.BLACK))
             }
             templateMatrix!!.add(row)
@@ -109,11 +112,14 @@ class PictureInstance {
         }
 
         val safeSeed = if (seed.isEmpty()) "ProfilePictureGenerator" else seed
+        val seedHash = safeSeed.hashCode()
 
         for (y in 0 until height) {
             for (x in 0 until width) {
                 val seedKey = abs((y * y * y + 3 * sin(x + y.toDouble()))).toInt()
-                val color = chosenColors[(safeSeed[seedKey % safeSeed.length].toInt() % chosenColors.size)]
+                val charVal = safeSeed[seedKey % safeSeed.length].toInt()
+                val colorKey = abs(charVal * 41 + seedHash + x * 13 + y * 17)
+                val color = chosenColors[colorKey % chosenColors.size]
                 templateMatrix!![y][x].color = color
             }
         }
